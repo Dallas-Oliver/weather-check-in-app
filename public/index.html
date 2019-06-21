@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+  <!--<![endif]-->
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+  </head>
+  <body>
+    <h1>Your Location</h1>
+      <p><span id='latitude'></span> 
+      </br> 
+      <span id='longitude'></span> 
+    </p>
+    <script>
+      
+
+      if ("geolocation" in navigator) {
+        console.log("navigation available");
+        navigator.geolocation.getCurrentPosition(position => {
+          console.log(position);
+          const lat = position.coords.latitude.toFixed(2);
+          const lon = position.coords.longitude.toFixed(2);
+          const data = {lat, lon};
+          const options = {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        };
+
+        fetch('/api', options)
+          .then(response => {
+            return response.json();
+          }).then(json => {
+            console.log(json)
+          })
+
+
+        });
+
+        
+      } else {
+        console.log("geolocation not available");
+      }
+    </script>
+  </body>
+</html>
