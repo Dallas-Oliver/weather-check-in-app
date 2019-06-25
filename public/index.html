@@ -11,46 +11,111 @@
     <title></title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="stylesheet" href="" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css' />
+
+
   </head>
   <body>
     <h1>Your Location</h1>
-      <p><span id='latitude'></span> 
-      </br> 
-      <span id='longitude'></span> 
-    </p>
-    <script>
+    <a href='index.html'>Check in</a> | <a href='logs.html'>View check-ins</a>
+    
+  </br>
+    <div id='button-div'>
       
+      
+    </div>
+    
+
+    <div id='lat-lon'>
+        <span>The weather here at (<span id='latitude'></span> 
+        ,
+        <span id='longitude'></span>) 
+     is <span id='summary'></span> with a temperature of 
+      <span id='temperature'></span> &deg; F.
+      </p>
+
+      <p>The concentration of particulate matter (<span id='aq-parameter'></span>) in the air is <span id='aq-value'></span><span id='aq-units'></span>. last recorded on <span id='aq-time'></span></p>
+
+    </div>
+
+    <p id='checked'></p>
+    
+      
+    <script>
+      let lat, lon, weather, air_quality;
+      const getCoordsButton = document.getElementById('get-coords');
+      const inputField = document.getElementById('input-field');
 
       if ("geolocation" in navigator) {
         console.log("navigation available");
-        navigator.geolocation.getCurrentPosition(position => {
-          console.log(position);
-          const lat = position.coords.latitude.toFixed(2);
-          const lon = position.coords.longitude.toFixed(2);
-          const data = {lat, lon};
-          const options = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data)
-        };
+        navigator.geolocation.getCurrentPosition( position => {
+          
+          lat = position.coords.latitude.toFixed(2);
+          lon = position.coords.longitude.toFixed(2);
+          document.getElementById('latitude').textContent = lat;
+          document.getElementById('longitude').textContent = lon;
 
-        fetch('/api', options)
-          .then(response => {
-            return response.json();
-          }).then(json => {
-            console.log(json)
-          })
+          const api_url = `/weather/${lat},${lon}`;
 
+          fetch(api_url)
+            .then(response => {
+              
+              return response.json();
+              
+            }).then( async json => {
+              
+              weather = json.weather.currently;
+              air_quality = json.air_quality.results[0].measurements[1];
+              
+
+
+              document.getElementById('summary').textContent = weather.summary;
+              document.getElementById('temperature').textContent = weather.temperature;
+              document.getElementById('aq-parameter').textContent = air_quality.parameter;
+              document.getElementById('aq-value').textContent = air_quality.value;
+              document.getElementById('aq-units').textContent = air_quality.unit;
+              document.getElementById('aq-time').textContent = air_quality.lastUpdated;
+
+
+              document.getElementById('checked').textContent = "You've checked in!"
+
+              setTimeout(() => {
+                document.getElementById('checked').textContent = '';
+              }, 2000)
+
+              
+              const data = {lat, lon, weather, air_quality};
+                const options = {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+              };
+
+              const response = await fetch('/api', options);
+              const api_json = await response.json();
+              console.log(api_json);
+
+              // fetch('/api', options)
+              //   .then(response => {
+              //     return response.json();
+              //   }).then(json => {
+              //     console.log(json)
+              //   })
+            
+            })
 
         });
-
-        
       } else {
         console.log("geolocation not available");
       }
+
+
+    
+
+      
     </script>
   </body>
 </html>

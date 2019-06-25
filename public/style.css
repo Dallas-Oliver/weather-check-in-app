@@ -1,0 +1,16 @@
+#lat-lon {
+  background: lightpink;
+}
+
+#button-div {
+  display: inline-block;
+}
+
+#checked {
+  margin-left: 5px;
+  margin-bottom: 15px;
+}
+
+#mapid {
+  height: 450px;
+}
