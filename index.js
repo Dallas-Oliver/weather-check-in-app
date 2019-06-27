@@ -1,6 +1,7 @@
 const express = require("express");
 const DataStore = require("nedb");
 const fetch = require("node-fetch");
+require("dotenv").config();
 
 const app = express();
 app.listen(3000, () => console.log("listening on port 3000"));
@@ -38,13 +39,12 @@ app.get("/weather/:latlon", async (req, res) => {
 
   const lat = latlon[0];
   const lon = latlon[1];
-
-  const weather_url = `https://api.darksky.net/forecast/af80cb9580517a10a93ed78fb3db245c/${lat},${lon}`;
-
-  const aq_url = `https://api.openaq.org/v1/latest?coordinates=${lat},${lon}`;
-
+  const api_key = process.env.API_KEY;
+  const weather_url = `https://api.darksky.net/forecast/${api_key}/${lat},${lon}`;
   const weather_response = await fetch(weather_url);
   const weather_data = await weather_response.json();
+
+  const aq_url = `https://api.openaq.org/v1/latest?coordinates=${lat},${lon}`;
   const aq_response = await fetch(aq_url);
   const aq_data = await aq_response.json();
 
